@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>🎬</title>
+
+<style>
+body{
+  margin:0;
+  font-family: 'Segoe UI', sans-serif;
+  background: radial-gradient(circle at center, #0a0a0a, #000);
+  color:white;
+  overflow:hidden;
+}
+
+/* scene */
+.scene{
+  position:absolute;
+  width:100%;
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  opacity:0;
+  transform:scale(1.1);
+  transition:1.2s ease;
+}
+
+.active{
+  opacity:1;
+  transform:scale(1);
+}
+
+/* text */
+.text{
+  font-size:24px;
+  max-width:80%;
+  text-align:center;
+  line-height:1.5;
+  text-shadow:0 0 20px rgba(255,255,255,0.3);
+}
+
+/* glow title */
+.glow{
+  font-size:34px;
+  text-shadow:0 0 25px rgba(255,255,255,0.9);
+}
+
+/* cake */
+#cake{
+  width:240px;
+  filter: drop-shadow(0 0 30px rgba(255,255,255,0.6));
+  cursor:pointer;
+}
+
+/* candle */
+#flames{
+  position:absolute;
+  top:10%;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:22px;
+}
+
+/* particles */
+.spark{
+  position:absolute;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+}
+</style>
+</head>
+
+<body>
+
+<!-- SCENE 1 -->
+<div id="s1" class="scene active">
+  <div id="t1" class="text"></div>
+</div>
+
+<!-- SCENE 2 -->
+<div id="s2" class="scene">
+  <div id="t2" class="text"></div>
+</div>
+
+<!-- SCENE 3 -->
+<div id="s3" class="scene">
+  <div id="t3" class="text"></div>
+</div>
+
+<!-- CAKE -->
+<div id="s4" class="scene">
+  <img id="cake" src="https://images.unsplash.com/photo-1599785209796-786432b228bc?w=500">
+  <div id="flames">🕯️🕯️🕯️</div>
+  <p>Make a wish…</p>
+</div>
+
+<!-- FINAL -->
+<div id="s5" class="scene">
+  <div class="glow">🎉 HAPPY BIRTHDAY 🎉</div>
+  <div class="text">Stay happy… always 💙</div>
+</div>
+
+<!-- AUDIO -->
+<audio id="music" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5c6c4b8c71.mp3"></audio>
+<audio id="blow" src="https://cdn.pixabay.com/download/audio/2021/08/09/audio_884fe92c49.mp3"></audio>
+
+<script>
+
+/* TYPE EFFECT */
+function type(el,text,cb){
+  let i=0;
+  el.innerHTML="";
+  let int=setInterval(()=>{
+    el.innerHTML+=text[i];
+    i++;
+    if(i>=text.length){
+      clearInterval(int);
+      if(cb) cb();
+    }
+  },45);
+}
+
+/* SCENE SWITCH */
+function show(id){
+  document.querySelectorAll(".scene").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+/* MUSIC FADE */
+function playMusic(){
+  let m=document.getElementById("music");
+  m.volume=0;
+  m.play();
+
+  let v=0;
+  let fade=setInterval(()=>{
+    v+=0.05;
+    m.volume=v;
+    if(v>=1) clearInterval(fade);
+  },200);
+}
+
+/* FIREWORKS */
+function fireworks(){
+  for(let i=0;i<80;i++){
+    let d=document.createElement("div");
+    d.className="spark";
+    document.body.appendChild(d);
+
+    let x=window.innerWidth/2;
+    let y=window.innerHeight/2;
+
+    d.style.left=x+"px";
+    d.style.top=y+"px";
+
+    let a=Math.random()*2*Math.PI;
+    let dist=Math.random()*250;
+
+    d.style.background=`hsl(${Math.random()*360},100%,70%)`;
+    d.style.boxShadow="0 0 10px white";
+
+    d.animate([
+      {transform:"translate(0,0)",opacity:1},
+      {transform:`translate(${Math.cos(a)*dist}px,${Math.sin(a)*dist}px)`,opacity:0}
+    ],{duration:1400});
+
+    setTimeout(()=>d.remove(),1400);
+  }
+}
+
+/* STORY FLOW */
+
+type(t1,"Hey… 😊",()=>{
+  setTimeout(()=>{
+    show("s2");
+
+    type(t2,"I know this is a little different…",()=>{
+      setTimeout(()=>{
+        show("s3");
+
+        type(t3,"But I made something just for you 🎁",()=>{
+          setTimeout(()=>{
+            show("s4");
+          },1500);
+        });
+
+      },1200);
+    });
+
+  },1200);
+});
+
+/* CAKE MOMENT */
+cake.onclick = function(){
+
+  document.getElementById("blow").play();
+  document.getElementById("flames").style.opacity=0;
+
+  setTimeout(()=>{
+    playMusic();
+    fireworks();
+    show("s5");
+  },900);
+}
+
+</script>
+
+</body>
+</html>
